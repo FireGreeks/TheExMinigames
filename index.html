@@ -1,0 +1,208 @@
+<html>
+<head>
+  <title>v.0.0</title>
+
+  <style>
+  
+  </style>
+
+</head>
+<body onkeydown="interactA(event)" onkeyup="interactB(event)">
+  
+  <canvas id="platform"></canvas><br/>
+  <button onclick="changeplayers(3)">3 players</button>
+  <button onclick="changeplayers(2)">2 players</button>
+  <button onclick="changemap(map.normal.sand)">Desert Map</button>
+  <button onclick="changemap(map.normal.cave)">Cave Map</button>
+  
+  <script src="game.js"></script>
+  <script src="menu.js"></script>
+  <script>
+  
+      var c = document.getElementById("platform");
+	  var ctx = c.getContext("2d");
+	  
+	  c.width = window.innerWidth;
+	  c.height = window.innerHeight;
+	  
+	  var pix = c.width / 26;
+     
+	  //LOAD WORLD
+	  
+	  var sounds = {
+	   
+	     go : new Audio(),
+		 game : new Audio(),
+		 beat : new Audio(),
+	  
+	  }
+	  
+	  sounds.go.src = "Audio/go.mp3";
+	  sounds.game.src = "Audio/gameMusic.wav";
+	  sounds.beat.src = "Audio/beat.wav";
+	  
+	  var textures = {
+	  
+	    cobble : new Image(),
+		sandstone : new Image(),
+		lava : new Image(),
+		water : new Image(),
+		backstone : new Image(),
+		backsand : new Image(),
+		hell : new Image(),
+		modR : new Image(),
+		
+	  }
+
+	  textures.cobble.src = "MapTextures/cobble.png";
+	  textures.sandstone.src = "MapTextures/sandstone.png";
+	  textures.lava.src = "MapTextures/lava.gif";
+	  textures.water.src = "MapTextures/water.gif";
+	  textures.backstone.src = "MapTextures/backstone.png";
+	  textures.backsand.src = "MapTextures/backsand.png";
+	  textures.hell.src = "MapTextures/hell.png";
+	  textures.modR.src = "MapTextures/modreplace.png";
+	  
+	  
+      var map = {  //0, 0
+	    normal : {
+		  cave : [
+		  
+		    [textures.backstone, ["wholeXY", 0, 0, 26, 12] ],
+			
+			[textures.hell, ["wholeXY", 0, 0, 26, 0] ],
+			
+		    [textures.cobble, ["wholeXY", 0, 1, 26, 2], [0, 2], [25, 2],
+			                  ["wholeXY", 7, 5, 19, 6], [0, 7], [1, 7], [2, 7], [3, 7],
+							  [25, 7], [24, 7], [23, 7], [22, 7],
+							  ["wholeXY", 6, 10, 11, 11], ["wholeXY", 15, 10, 20, 11], [1, 2], [24, 2], [20, 5]   ],
+			
+            [textures.modR],			
+			
+			[textures.lava, ["wholeXY", 0, 11, 26, 12] ],
+		  
+		  ],
+		  sand : [
+
+		    [textures.backsand, ["wholeXY", 0, 0, 26, 12] ],
+			
+			[textures.hell, ["wholeXY", 0, 0, 26, 1] ],
+			
+		    [textures.sandstone, ["wholeXY", 0, 1, 26, 2], [0, 2], [25, 2],
+			                  ["wholeXY", 7, 5, 19, 6], [0, 7], [1, 7], [2, 7], [3, 7],
+							  [25, 7], [24, 7], [23, 7], [22, 7],
+							  ["wholeXY", 6, 10, 11, 11], ["wholeXY", 15, 10, 20, 11], [1, 2], [24, 2]],
+							  
+			[textures.modR],				  
+							  
+			[textures.water, ["wholeXY", 0, 11, 26, 12] ],
+			
+		  ]
+		},
+		mod : {
+		   TNTRun : [
+		      [textures.backsand, ["wholeXY", 0, 0, 26, 12] ],
+			  
+			  [textures.hell, ["wholeXY", 0, 0, 26, 1] ],
+			  
+			  [textures.sandstone, 
+						[0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], 
+					[12, 1], [13, 1], [14, 1], [15, 1], [16, 1], [17, 1], [18, 1], [19, 1], [20, 1], [21, 1], [22, 1], [23, 1], [24, 1], [25, 1],
+
+						[3, 6], [4, 6], [5, 6], [6, 6], [7, 6], [8, 6], [9, 6], [10, 6], [11, 6], 
+					[12, 6], [13, 6], [14, 6], [15, 6], [16, 6], [17, 6], [18, 6], [19, 6], [20, 6], [21, 6], [22, 6], 
+					
+								[3, 5], [4, 5], [5, 5], [6, 5], [7, 5], [8, 5], [9, 5], [10, 5], [11, 5], 
+					[12, 5], [13, 5], [14, 5], [15, 5], [16, 5], [17, 5], [18, 5], [19, 5], [20, 5], [21, 5], [22, 5], 			
+					
+						[0, 7], [1, 7], [2, 7], [23, 7], [24, 7], [25, 7], [0, 6], [1, 6], [2, 6], [23, 6], [24, 6], [25, 6], 
+						
+						[2, 9], [3, 9], [7, 9], [8, 9], [12, 9], [13, 9], [17, 9], [18, 9], [22, 9], [23, 9], 
+					[2, 10], [3, 10], [7, 10], [8, 10], [12, 10], [13, 10] , [17, 10], [18, 10], [22, 10], [23, 10], 	
+		      ],
+			  
+			  [textures.modR],
+			  
+			  [textures.water, ["wholeXY", 0, 11, 26, 12] ]
+		   ]
+		   
+		}
+		
+		}
+		
+
+	  
+		var animateV = "undefinned";
+		var animateVA = "undefinned";
+		var animateVB = "undefinned";
+		
+      function loadWorld(worldPath) {
+	  
+	    var texture;
+	  
+	    for (num = 0; num != worldPath.length; num++) {
+	      texture = worldPath[num][0];
+		  for (i = 1; i < worldPath[num].length; i++) {
+		  
+		     if (worldPath[num][i][0] == "wholeXY") {
+		       for (Y = worldPath[num][i][2]; Y < worldPath[num][i][4]; Y++) {
+			     for (X = worldPath[num][i][1]; X < worldPath[num][i][3]; X++) {
+			   
+			        ctx.drawImage(texture, X * pix, Y * pix, pix, pix);
+				
+			     }
+			   }
+		     }
+		     else {
+		       ctx.drawImage(texture, worldPath[num][i][0] * pix, worldPath[num][i][1] * pix, pix, pix);
+		     }				 
+		  
+			 }
+			 }
+		  
+		Path = worldPath;	
+      }
+
+
+      loadWorld(map.normal.sand);	
+      restart();
+      setTimeout(function() {
+	    gameStart();
+	  }, 4000);	 
+
+     function changeplayers(numb) {
+	   players[3] = numb;
+	 }	  
+	 function changemap(map) {
+	   Path = map;
+	 }
+	 
+var recupCV = [
+		      [textures.backsand, ["wholeXY", 0, 0, 26, 12] ],
+			  
+			  [textures.hell, ["wholeXY", 0, 0, 26, 1] ],
+			  
+			  [textures.sandstone, 
+						[0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], 
+					[12, 1], [13, 1], [14, 1], [15, 1], [16, 1], [17, 1], [18, 1], [19, 1], [20, 1], [21, 1], [22, 1], [23, 1], [24, 1], [25, 1],
+
+						[3, 6], [4, 6], [5, 6], [6, 6], [7, 6], [8, 6], [9, 6], [10, 6], [11, 6], 
+					[12, 6], [13, 6], [14, 6], [15, 6], [16, 6], [17, 6], [18, 6], [19, 6], [20, 6], [21, 6], [22, 6], 
+					
+								[3, 5], [4, 5], [5, 5], [6, 5], [7, 5], [8, 5], [9, 5], [10, 5], [11, 5], 
+					[12, 5], [13, 5], [14, 5], [15, 5], [16, 5], [17, 5], [18, 5], [19, 5], [20, 5], [21, 5], [22, 5], 			
+					
+						[0, 7], [1, 7], [2, 7], [23, 7], [24, 7], [25, 7], [0, 6], [1, 6], [2, 6], [23, 6], [24, 6], [25, 6], 
+						
+						[2, 9], [3, 9], [7, 9], [8, 9], [12, 9], [13, 9], [17, 9], [18, 9], [22, 9], [23, 9], 
+					[2, 10], [3, 10], [7, 10], [8, 10], [12, 10], [13, 10] , [17, 10], [18, 10], [22, 10], [23, 10], 	
+		      ],
+			  
+			  [textures.modR],
+			  
+			  [textures.water, ["wholeXY", 0, 11, 26, 12] ]
+		   ]	 
+  </script>
+  
+</body>
+</html>
